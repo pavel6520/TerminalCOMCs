@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO.Ports;
 
 namespace TerminalCOMCs
@@ -15,8 +13,8 @@ namespace TerminalCOMCs
         private static int COMDataBits = 8;
         private static StopBits COMStopBits = StopBits.One;
         private static Handshake COMHandshake = Handshake.None;
-        public static int COMReadTimeout = 100;
-        public static int COMWriteTimeout = 100;
+        public static int COMReadTimeout = 50;
+        public static int COMWriteTimeout = 50;
         
         public static bool PortsNamesUpdate()
         {
@@ -305,7 +303,7 @@ namespace TerminalCOMCs
             return true;
         }
 
-        public static bool OpenCOMpo()
+        public static bool OpenCOMport()
         {
             //Opens the connection
             try
@@ -333,6 +331,49 @@ namespace TerminalCOMCs
                 Console.WriteLine(e);
                 Console.WriteLine("Error IsOpenCOMport");
                 Console.ReadKey();
+                return false;
+            }
+        }
+
+        public static string ReadCOMport()
+        {
+            try
+            {
+                return COMport.ReadLine();
+            }
+            catch (TimeoutException) { }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error ReadCOMport");
+                Console.WriteLine(e);
+                return "";
+            }
+            return "";
+        }
+
+        public static bool WriteCOMport(string WriteStr, bool NewLine)
+        {
+            try
+            {
+                COMport.Write(WriteStr);
+                if (NewLine)
+                {
+                    COMport.WriteLine("");
+                }
+                return true;
+            }
+            catch (ArgumentNullException)
+            {
+                return true;
+            }
+            catch (TimeoutException)
+            {
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error WriteCOMport");
+                Console.WriteLine(e);
                 return false;
             }
         }
