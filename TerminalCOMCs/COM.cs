@@ -335,20 +335,20 @@ namespace TerminalCOMCs
             }
         }
 
-        public static string ReadCOMport()
+        public static int ReadCOMport()
         {
             try
             {
-                return COMport.ReadLine();
+                return COMport.ReadChar();
             }
             catch (TimeoutException) { }
             catch (Exception e)
             {
                 Console.WriteLine("Error ReadCOMport");
                 Console.WriteLine(e);
-                return "";
+                return -2;
             }
-            return "";
+            return -1;
         }
 
         public static bool WriteCOMport(string WriteStr, bool NewLine)

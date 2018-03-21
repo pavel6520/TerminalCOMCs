@@ -77,7 +77,11 @@ namespace TerminalCOMCs
             {
                 try
                 {
-                    Console.WriteLine(COM.ReadCOMport());
+                    int ReadBuf = COM.ReadCOMport();
+                    if (ReadBuf >= 0)
+                    {
+                        Console.Write(Convert.ToChar(ReadBuf));
+                    }
                 }
                 catch (Exception e)
                 {
