@@ -62,6 +62,28 @@ namespace TerminalCOMCs
             return true;
         }
 
+        public static bool InitCOMport()
+        {
+            //Initialize COM port
+            try
+            {
+                COMport = new SerialPort(COMName)
+                {
+                    Handshake = COMHandshake,
+                    ReadTimeout = COMReadTimeout,
+                    WriteTimeout = COMWriteTimeout
+                };
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error InitPort");
+                Console.WriteLine(e.Message);
+                Console.ReadKey();
+                return false;
+            }
+            return true;
+        }
+
         public static string GetCOMportName()
         {
             //Get the name of COMport.
@@ -281,17 +303,18 @@ namespace TerminalCOMCs
             }
         }
 
-        public static bool InitCOMport()
+        public static bool SetConfCOMport()
         {
             //Initialize COM port
             try
             {
-                COMport = new SerialPort(COMName, COMBaud, COMParity, COMDataBits, COMStopBits)
-                {
-                    Handshake = COMHandshake,
-                    ReadTimeout = COMReadTimeout,
-                    WriteTimeout = COMWriteTimeout
-                };
+                COMport.BaudRate = COMBaud;
+                COMport.Parity = COMParity;
+                COMport.DataBits = COMDataBits;
+                COMport.StopBits = COMStopBits;
+                COMport.Handshake = COMHandshake;
+                COMport.ReadTimeout = COMReadTimeout;
+                COMport.WriteTimeout = COMWriteTimeout;
             }
             catch (Exception e)
             {

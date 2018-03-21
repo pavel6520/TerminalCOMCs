@@ -103,7 +103,7 @@ namespace TerminalCOMCs
                         {
                             Console.Clear();
                             TextColor.DarkCyanColor("Выбран порт ", false);
-                            TextColor.WhiteColor("" + COM.GetPortsName(PortNum), true);
+                            TextColor.WhiteColor("" + COM.GetCOMportName(), true);
                             break;
                         }
                     case 1:
@@ -112,28 +112,28 @@ namespace TerminalCOMCs
                             {
                                 COM.SetPortBaud(COM.GetBaud(PortBaudRate));
                                 TextColor.DarkCyanColor("Выбрана скорость ", false);
-                                TextColor.WhiteColor("" + COM.GetBaud(PortBaudRate), false);
+                                TextColor.WhiteColor("" + COM.GetCOMportBaud(), false);
                                 TextColor.DarkCyanColor(" Бод", true);
                             }
                             else
                             {
                                 COM.SetPortBaud(PortBaudRate);
                                 TextColor.DarkCyanColor("Выбрана скорость ", false);
-                                TextColor.WhiteColor("" + PortBaudRate, false);
+                                TextColor.WhiteColor("" + COM.GetCOMportBaud(), false);
                                 TextColor.DarkCyanColor(" Бод", true);
                             }
                             break;
                         }
                 }
             }
-            /*if (COM.IsOpenCOMport())
+            if (COM.IsOpenCOMport())
             {
                 TextColor.GreenColor("Соединение открыто", true);
             }
             else
             {
                 TextColor.ErrorColor("Соединение закрыто", true);
-            }*/
+            }
         }
 
         static void Main(string[] args)
@@ -181,7 +181,14 @@ namespace TerminalCOMCs
                 }
             } while (PortNum < 0 || PortNum > PortCount - 1);
             COM.SetPortName(PortNum);
+            bool InitSuccess = COM.InitCOMport();
             GetStateConfigurate(0);
+            while (!InitSuccess)
+            {
+                TextColor.ErrorColor("Ошибка инициализации, повторная попытка", true);
+                Thread.Sleep(1000);
+            }
+            TextColor.GreenColor("Порт инициализирован", true);
             TextColor.GreenColor("Установите скорость приема/передачи COM порта в Бодах.", true);
             for (int i = 1; i <= 9; i++)
             {
@@ -208,20 +215,21 @@ namespace TerminalCOMCs
                 }
             } while (PortBaudRate < 1);
             GetStateConfigurate(1);
-            while (!COM.InitCOMport())
+            if (!COM.SetConfCOMport())
             {
-                TextColor.ErrorColor("Ошибка инициализации, повторная попытка", true);
-                Thread.Sleep(1000);
+                TextColor.ErrorColor("Ошибка установки настроек", true);
+                Console.ReadKey();
             }
-            TextColor.GreenColor("Порт инициализирован", true);
+            else
+            {
+                TextColor.GreenColor("Настройки установлены", true);
+            }
             while (!COM.OpenCOMport())
             {
                 TextColor.ErrorColor("Ошибка соединения, повторная попытка", true);
                 Thread.Sleep(1000);
             }
             TextColor.GreenColor("Соединение открыто", true);
-            
-
             ReadThread = new Thread(ReadCOMport);
             ReadThread.Start();
             while (true)
