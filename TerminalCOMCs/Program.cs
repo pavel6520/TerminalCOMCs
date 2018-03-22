@@ -139,7 +139,7 @@ namespace TerminalCOMCs
                     case 0:
                         {
                             TextColor.DarkCyanColor("Выбран порт ", false);
-                            TextColor.WhiteColor("" + COM.GetCOMportName(), true);
+                            TextColor.WhiteColor(COM.GetCOMportName(), true);
                             break;
                         }
                     case 1:
@@ -152,7 +152,7 @@ namespace TerminalCOMCs
                     case 2:
                         {
                             TextColor.DarkCyanColor("Выбран контроль четности битов ", false);
-                            TextColor.WhiteColor("" + COM.GetParityName(COM.GetCOMportParity()), true);
+                            TextColor.WhiteColor(COM.GetParityName(COM.GetCOMportParity()), true);
                             break;
                         }
                     case 3:
@@ -164,13 +164,13 @@ namespace TerminalCOMCs
                     case 4:
                         {
                             TextColor.DarkCyanColor("Кол-во стопБитов ", false);
-                            TextColor.WhiteColor("" + COM.GetCOMportDataBits(), true);
+                            TextColor.WhiteColor(COM.GetStopBitsName(COM.GetCOMportStopBits()), true);
                             break;
                         }
                     case 5:
                         {
                             TextColor.DarkCyanColor("Выбран протокол управления ", false);
-                            TextColor.WhiteColor("" + COM.GetHandshakeName(COM.GetCOMportHandshake()), true);
+                            TextColor.WhiteColor(COM.GetHandshakeName(COM.GetCOMportHandshake()), true);
                             break;
                         }
                     case 6:
