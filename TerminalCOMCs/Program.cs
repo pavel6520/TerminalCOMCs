@@ -263,11 +263,6 @@ namespace TerminalCOMCs
                 } while (PortParity < 1);
                 COM.SetPortParity(PortParity);
             }
-            
-
-
-
-
             GetStateConfigurate(2);
             Console.WriteLine("Открытие соединения...");
             while (!COM.OpenCOMport())
