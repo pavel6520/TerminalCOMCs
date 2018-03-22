@@ -214,7 +214,7 @@ namespace TerminalCOMCs
             //Return the name values of Stop Bits
             switch (StopBit)
             {
-                case 1: return "StopBits.None";
+                case 1: return "StopBits.None (ERROR, not used)";
                 case 2: return "StopBits.One";
                 case 3: return "StopBits.OnePointFive";
                 case 4: return "StopBits.Two";
@@ -229,7 +229,7 @@ namespace TerminalCOMCs
             {
                 switch (StopBit)
                 {
-                    case 1: COMStopBits = StopBits.None; break;
+                    //case 1: COMStopBits = StopBits.None; break;
                     case 2: COMStopBits = StopBits.One; break;
                     case 3: COMStopBits = StopBits.OnePointFive; break;
                     case 4: COMStopBits = StopBits.Two; break;
@@ -391,11 +391,11 @@ namespace TerminalCOMCs
             }
         }
 
-        public static bool WriteCOMport(char WriteStr, bool NewLine)
+        public static bool WriteCOMport(int WriteStr, bool NewLine)
         {
             try
             {
-                COMport.Write(Convert.ToString(WriteStr));
+                COMport.Write(Convert.ToChar(WriteStr) + "");
                 if (NewLine)
                 {
                     COMport.WriteLine("");
