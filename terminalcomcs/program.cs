@@ -106,7 +106,8 @@ namespace TerminalCOMCs
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("\n" + e);
+                    TextColor.ErrorColor("\n" + e, true);
+                    Thread.Sleep(1000);
                 }
             }
         }
@@ -476,7 +477,11 @@ namespace TerminalCOMCs
                     {
                         TextColor.ErrorColor("Неверный формат, ожидалось число", true);
                     }
-                    
+                    catch (OverflowException)
+                    {
+                        TextColor.ErrorColor("Неверный формат, ожидалось число", true);
+                    }
+
                 }
             }
         }
