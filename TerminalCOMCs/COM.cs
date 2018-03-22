@@ -8,7 +8,7 @@ namespace TerminalCOMCs
         private static string[] PortNames;
         private static SerialPort COMport;
         private static string COMName;
-        private static int COMBaud = 115200;
+        private static int COMBaud = 9600;
         private static Parity COMParity = Parity.None;
         private static int COMDataBits = 8;
         private static StopBits COMStopBits = StopBits.One;
@@ -27,7 +27,6 @@ namespace TerminalCOMCs
             {
                 Console.WriteLine(e);
                 Console.WriteLine("Error GetPortNames");
-                Console.ReadKey();
                 return false;
             }
             return true;
@@ -56,7 +55,6 @@ namespace TerminalCOMCs
             {
                 Console.WriteLine(e.Message);
                 Console.WriteLine("Error SetPortName");
-                Console.ReadKey();
                 return false;
             }
             return true;
@@ -67,12 +65,7 @@ namespace TerminalCOMCs
             //Initialize COM port
             try
             {
-                COMport = new SerialPort(COMName)
-                {
-                    Handshake = COMHandshake,
-                    ReadTimeout = COMReadTimeout,
-                    WriteTimeout = COMWriteTimeout
-                };
+                COMport = new SerialPort(COMName);
             }
             catch (Exception e)
             {
@@ -125,7 +118,7 @@ namespace TerminalCOMCs
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                Console.ReadKey();
+                Console.WriteLine("Error SetPortBaud");
                 return false;
             }
             return true;
@@ -169,7 +162,7 @@ namespace TerminalCOMCs
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                Console.ReadKey();
+                Console.WriteLine("SetPortParity");
                 return false;
             }
             return true;
@@ -205,7 +198,7 @@ namespace TerminalCOMCs
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                Console.ReadKey();
+                Console.WriteLine("Error SetPortDataBits");
                 return false;
             }
             return true;
@@ -246,7 +239,7 @@ namespace TerminalCOMCs
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                Console.ReadKey();
+                Console.WriteLine("Error SetPortStopBits");
                 return false;
             }
             return true;
@@ -320,7 +313,6 @@ namespace TerminalCOMCs
             {
                 Console.WriteLine("Error InitPort");
                 Console.WriteLine(e.Message);
-                Console.ReadKey();
                 return false;
             }
             return true;
@@ -337,7 +329,6 @@ namespace TerminalCOMCs
             {
                 Console.WriteLine("Error OpenPort");
                 Console.WriteLine(e.Message);
-                Console.ReadKey();
                 return false;
             }
             return true;
@@ -353,7 +344,6 @@ namespace TerminalCOMCs
             {
                 Console.WriteLine(e);
                 Console.WriteLine("Error IsOpenCOMport");
-                Console.ReadKey();
                 return false;
             }
         }
@@ -395,7 +385,34 @@ namespace TerminalCOMCs
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error WriteCOMport");
+                Console.WriteLine("Error WriteCOMport string");
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+
+        public static bool WriteCOMport(char WriteStr, bool NewLine)
+        {
+            try
+            {
+                COMport.Write(Convert.ToString(WriteStr));
+                if (NewLine)
+                {
+                    COMport.WriteLine("");
+                }
+                return true;
+            }
+            catch (ArgumentNullException)
+            {
+                return true;
+            }
+            catch (TimeoutException)
+            {
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error WriteCOMport char");
                 Console.WriteLine(e);
                 return false;
             }

@@ -73,6 +73,7 @@ namespace TerminalCOMCs
         private static int PortCount;
         private static int PortNum = -1;
         private static int PortBaudRate = -1;
+        private static int PortParity = -1;
 
         public static void ReadCOMport()
         {
@@ -95,6 +96,16 @@ namespace TerminalCOMCs
 
         public static bool GetStateConfigurate(int Stage)
         {
+            Console.Clear();
+            if (!COM.SetConfCOMport())
+            {
+                TextColor.ErrorColor("Ошибка установки настроек", true);
+                Console.ReadKey();
+            }
+            else
+            {
+                TextColor.GreenColor("Настройки установлены", true);
+            }
             for (int i = 0; i <= Stage; i++)
             {
                 switch (i)
@@ -107,9 +118,15 @@ namespace TerminalCOMCs
                         }
                     case 1:
                         {
-                            
                             TextColor.DarkCyanColor("Выбрана скорость ", false);
                             TextColor.WhiteColor("" + COM.GetCOMportBaud(), false);
+                            TextColor.DarkCyanColor(" Бод", true);
+                            break;
+                        }
+                    case 2:
+                        {
+                            TextColor.DarkCyanColor("Выбран контроль четности битов ", false);
+                            TextColor.WhiteColor("" + COM.GetParityName(COM.GetCOMportParity()), false);
                             TextColor.DarkCyanColor(" Бод", true);
                             break;
                         }
@@ -129,23 +146,23 @@ namespace TerminalCOMCs
 
         static void Main(string[] args)
         {
+            //1. GetNames
             do
             {
                 TextColor.GreenColor("Получение информации об активных COM портах...", true);
                 if (!COM.PortsNamesUpdate())
                 {
                     TextColor.ErrorColor("Ошибка получения имен портов.", true);
+                    Console.WriteLine("Нажмите любую клавишу для повторной попытки...\n");
                     Console.ReadKey();
-                    Environment.Exit(-1);
                 }
                 if ((PortCount = COM.GetPortsCount()) == 0)
                 {
                     TextColor.ErrorColor("Активные порты не найдены. Проверьте наличие активных портов в диспетчере устройств.", true);
-                    Console.WriteLine("Нажмите любую клавишу для продолжения...\n");
+                    Console.WriteLine("Нажмите любую клавишу для повторной проверки...\n");
                     Console.ReadKey();
                 }
             } while (PortCount == 0);
-            
             for (int i = 0; i < PortCount; i++)
             {
                 Console.WriteLine(i + ".  =>  " + COM.GetPortsName(i));
@@ -164,23 +181,23 @@ namespace TerminalCOMCs
                 }
                 catch (ArgumentException)
                 {
-                    TextColor.ErrorColor("Неверный формат, введите число: ", false);
+                    TextColor.ErrorColor("Неверный формат, введите число (от 0 до " + (PortCount - 1) + "): ", false);
                 }
                 catch (FormatException)
                 {
-                    TextColor.ErrorColor("Неверный формат, введите число: ", false);
+                    TextColor.ErrorColor("Неверный формат, введите число (от 0 до " + (PortCount - 1) + "): ", false);
                 }
             } while (PortNum < 0 || PortNum > PortCount - 1);
             COM.SetPortName(PortNum);
-            Console.Clear();
             while (!COM.InitCOMport())
             {
                 TextColor.ErrorColor("Ошибка инициализации, повторная попытка", true);
                 Thread.Sleep(1000);
             }
-            TextColor.GreenColor("Порт инициализирован", true);
             GetStateConfigurate(0);
-            TextColor.GreenColor("/nУстановите скорость приема/передачи COM порта в Бодах.", true);
+            TextColor.GreenColor("Порт инициализирован", true);
+            //2. SetBaudrate
+            TextColor.GreenColor("\nУстановите скорость приема/передачи COM порта в Бодах.", true);
             for (int i = 1; i <= 9; i++)
             {
                 Console.WriteLine(i + ".  =>  " + COM.GetBaud(i));
@@ -213,26 +230,52 @@ namespace TerminalCOMCs
             {
                 COM.SetPortBaud(PortBaudRate);
             }
-            Console.Clear();
             GetStateConfigurate(1);
+            TextColor.DarkCyanColor("Включить режим расширенной настройки (Y/any key): ", false);
+            int AdvanSetting = Console.Read();
+            if (AdvanSetting == 89 || AdvanSetting == 121)
+            {
+                //3. SetParity
+                TextColor.GreenColor("\nУстановите контроль четности битов (если не знаете что это, выберите 1).", true);
+                for (int i = 1; i < 5; i++)
+                {
+                    Console.WriteLine(i + ".  =>  " + COM.GetParityName(i));
+                }
+                TextColor.GrayColor("Введите номер нужного вам контроля четности битов (от 1 до 5): ", false);
+                do
+                {
+                    try
+                    {
+                        PortParity = Convert.ToInt32(Console.ReadLine());
+                        if (PortParity < 1)
+                        {
+                            TextColor.ErrorColor("Неверное число, повторите ввод (число от 1 до 5): ", false);
+                        }
+                    }
+                    catch (ArgumentException)
+                    {
+                        TextColor.ErrorColor("Неверный формат, введите число (от 1 до 5): ", false);
+                    }
+                    catch (FormatException)
+                    {
+                        TextColor.ErrorColor("Неверный формат, введите число (от 1 до 5): ", false);
+                    }
+                } while (PortParity < 1);
+                COM.SetPortParity(PortParity);
+            }
+            
 
 
-            Console.Clear();
-            if (!COM.SetConfCOMport())
-            {
-                TextColor.ErrorColor("Ошибка установки настроек", true);
-                Console.ReadKey();
-            }
-            else
-            {
-                TextColor.GreenColor("Настройки установлены", true);
-            }
+
+
+            GetStateConfigurate(2);
+            Console.WriteLine("Открытие соединения...");
             while (!COM.OpenCOMport())
             {
                 TextColor.ErrorColor("Ошибка соединения, повторная попытка", true);
                 Thread.Sleep(1000);
             }
-            GetStateConfigurate(1);
+            GetStateConfigurate(2);
             ReadThread = new Thread(ReadCOMport);
             ReadThread.Start();
             while (true)
