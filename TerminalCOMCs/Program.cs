@@ -233,6 +233,7 @@ namespace TerminalCOMCs
             GetStateConfigurate(1);
             TextColor.DarkCyanColor("Включить режим расширенной настройки (Y/any key): ", false);
             int AdvanSetting = Console.Read();
+            Console.ReadLine();
             if (AdvanSetting == 89 || AdvanSetting == 121)
             {
                 //3. SetParity
