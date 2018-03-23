@@ -86,20 +86,26 @@ namespace TerminalCOMCs
             {
                 try
                 {
-                    if (!ReadType)
+                    int ReadBuf = COM.ReadCOMport();
+                    if (ReadBuf == -2)
                     {
-                        int ReadBuf = COM.ReadCOMport();
-                        if (ReadBuf >= 0)
-                        {
-                            TextColor.GreenColor(Convert.ToChar(ReadBuf), false);
-                        }
+                        TextColor.ErrorColor("Ошибка чтения. Порт закрыт", true);
+                        Console.WriteLine("Нажмите любую клавишу для продолжения...");
+                        Console.ReadKey();
+                        Environment.Exit(-1);
                     }
                     else
                     {
-                        int ReadBuf = COM.ReadCOMport();
                         if (ReadBuf >= 0)
                         {
-                            TextColor.GreenColor(ReadBuf + "", true);
+                            if (!ReadType)
+                            {
+                                TextColor.GreenColor(Convert.ToChar(ReadBuf), false);
+                            }
+                            else
+                            {
+                                TextColor.GreenColor(ReadBuf + "", true);
+                            }
                         }
                     }
                     
