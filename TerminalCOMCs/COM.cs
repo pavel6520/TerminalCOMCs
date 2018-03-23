@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
+using System.Threading;
 
 namespace TerminalCOMCs
 {
@@ -13,7 +14,7 @@ namespace TerminalCOMCs
         private static int COMDataBits = 8;
         private static StopBits COMStopBits = StopBits.One;
         private static Handshake COMHandshake = Handshake.None;
-        public static int COMReadTimeout = 50;
+        public static int COMReadTimeout = 10;
         public static int COMWriteTimeout = 50;
         
         public bool PortsNamesUpdate()
@@ -352,13 +353,21 @@ namespace TerminalCOMCs
         {
             try
             {
-                return COMport.ReadChar();
+                if (COMport.IsOpen)
+                {
+                    return COMport.ReadChar();
+                }
+                else
+                {
+                    return -2;
+                }
             }
             catch (TimeoutException) { }
             catch (Exception e)
             {
                 Console.WriteLine("Error ReadCOMport");
                 Console.WriteLine(e);
+                Thread.Sleep(2000);
                 return -2;
             }
             return -1;
