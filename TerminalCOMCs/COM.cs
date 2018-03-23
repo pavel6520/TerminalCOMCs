@@ -16,7 +16,7 @@ namespace TerminalCOMCs
         public static int COMReadTimeout = 50;
         public static int COMWriteTimeout = 50;
         
-        public static bool PortsNamesUpdate()
+        public bool PortsNamesUpdate()
         {
             //Writes COM port names in a PortNames
             try
@@ -32,19 +32,19 @@ namespace TerminalCOMCs
             return true;
         }
         
-        public static int GetPortsCount()
+        public int GetPortsCount()
         {
             //Return the count of COM ports
             return PortNames.Length;
         }
 
-        public static string GetPortsName(int NameNumber)
+        public string GetPortsName(int NameNumber)
         {
             //Return the COM port name under the number NameNumber
             return PortNames[NameNumber];
         }
         
-        public static bool SetPortName(int NameNumber)
+        public bool SetPortName(int NameNumber)
         {
             //Write in COMName a port name from the PortNames array
             try
@@ -60,7 +60,7 @@ namespace TerminalCOMCs
             return true;
         }
 
-        public static bool InitCOMport()
+        public bool InitCOMport()
         {
             //Initialize COM port
             try
@@ -77,13 +77,13 @@ namespace TerminalCOMCs
             return true;
         }
 
-        public static string GetCOMportName()
+        public string GetCOMportName()
         {
             //Get the name of COMport.
             return COMport.PortName;
         }
 
-        public static int GetBaud(int Baud)
+        public int GetBaud(int Baud)
         {
             //Return the possible values of speed in Baud
             switch (Baud)
@@ -101,7 +101,7 @@ namespace TerminalCOMCs
             }
         }
         
-        public static bool SetPortBaud(int Baud)
+        public bool SetPortBaud(int Baud)
         {
             //Write in COMBaud a speed in Baud
             try
@@ -124,12 +124,12 @@ namespace TerminalCOMCs
             return true;
         }
 
-        public static int GetCOMportBaud()
+        public int GetCOMportBaud()
         {
             return COMport.BaudRate;
         }
 
-        public static string GetParityName(int NumParity)
+        public string GetParityName(int NumParity)
         {
             //Return the name values of Parity Bit
             switch (NumParity)
@@ -143,7 +143,7 @@ namespace TerminalCOMCs
             }
         }
 
-        public static bool SetPortParity(int NumParity)
+        public bool SetPortParity(int NumParity)
         {
             //Write in COMParity a value of Parity
             try
@@ -168,7 +168,7 @@ namespace TerminalCOMCs
             return true;
         }
 
-        public static int GetCOMportParity()
+        public int GetCOMportParity()
         {
             switch (COMport.Parity)
             {
@@ -181,7 +181,7 @@ namespace TerminalCOMCs
             }
         }
 
-        public static bool SetPortDataBits(int DataBits)
+        public bool SetPortDataBits(int DataBits)
         {
             //Write in COMDataBits a value of 5..8
             try
@@ -204,12 +204,12 @@ namespace TerminalCOMCs
             return true;
         }
 
-        public static int GetCOMportDataBits()
+        public int GetCOMportDataBits()
         {
             return COMport.DataBits;
         }
 
-        public static string GetStopBitsName(int StopBit)
+        public string GetStopBitsName(int StopBit)
         {
             //Return the name values of Stop Bits
             switch (StopBit)
@@ -222,7 +222,7 @@ namespace TerminalCOMCs
             }
         }
 
-        public static bool SetPortStopBits(int StopBit)
+        public bool SetPortStopBits(int StopBit)
         {
             //Write in COMStopBits a value of StopBits
             try
@@ -245,7 +245,7 @@ namespace TerminalCOMCs
             return true;
         }
 
-        public static int GetCOMportStopBits()
+        public int GetCOMportStopBits()
         {
             switch (COMport.StopBits)
             {
@@ -257,7 +257,7 @@ namespace TerminalCOMCs
             }
         }
 
-        public static string GetHandshakeName(int NumHandshake)
+        public string GetHandshakeName(int NumHandshake)
         {
             //Return the possible values of Handshake (value in 1..4)
             switch (NumHandshake)
@@ -270,7 +270,7 @@ namespace TerminalCOMCs
             }
         }
 
-        public static bool SetPortHandshake(int NumHandshake)
+        public bool SetPortHandshake(int NumHandshake)
         {
             //Return the possible values of Handshake (value in 1..4)
             switch (NumHandshake)
@@ -284,7 +284,7 @@ namespace TerminalCOMCs
             return true;
         }
 
-        public static int GetCOMportHandshake()
+        public int GetCOMportHandshake()
         {
             switch (COMport.Handshake)
             {
@@ -296,7 +296,7 @@ namespace TerminalCOMCs
             }
         }
 
-        public static bool SetConfCOMport()
+        public bool SetConfCOMport()
         {
             //Initialize COM port
             try
@@ -318,7 +318,7 @@ namespace TerminalCOMCs
             return true;
         }
 
-        public static bool OpenCOMport()
+        public bool OpenCOMport()
         {
             //Opens the connection
             try
@@ -334,7 +334,7 @@ namespace TerminalCOMCs
             return true;
         }
 
-        public static bool IsOpenCOMport()
+        public bool IsOpenCOMport()
         {
             try
             {
@@ -348,7 +348,7 @@ namespace TerminalCOMCs
             }
         }
 
-        public static int ReadCOMport()
+        public int ReadCOMport()
         {
             try
             {
@@ -364,7 +364,7 @@ namespace TerminalCOMCs
             return -1;
         }
 
-        public static bool WriteCOMport(string WriteStr, bool NewLine)
+        public bool WriteCOMport(string WriteStr, bool NewLine)
         {
             try
             {
@@ -391,7 +391,7 @@ namespace TerminalCOMCs
             }
         }
 
-        public static bool WriteCOMport(int WriteStr, bool NewLine)
+        public bool WriteCOMport(int WriteStr, bool NewLine)
         {
             try
             {
