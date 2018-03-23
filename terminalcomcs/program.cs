@@ -106,7 +106,8 @@ namespace TerminalCOMCs
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("\n" + e);
+                    TextColor.ErrorColor("\n" + e, true);
+                    Thread.Sleep(1000);
                 }
             }
         }
