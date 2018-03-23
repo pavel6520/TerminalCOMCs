@@ -69,6 +69,7 @@ namespace TerminalCOMCs
 
     class Program
     {
+        private static COM COMport;
         private static Thread ReadThread;
         private static bool ReadType;
         private static bool WriteType;
@@ -86,27 +87,38 @@ namespace TerminalCOMCs
             {
                 try
                 {
-                    if (!ReadType)
+                    int ReadBuf = COMport.ReadCOMport();
+                    if (ReadBuf == -2)
                     {
-                        int ReadBuf = COM.ReadCOMport();
-                        if (ReadBuf >= 0)
-                        {
-                            TextColor.GreenColor(Convert.ToChar(ReadBuf), false);
-                        }
+                        TextColor.ErrorColor("Ошибка чтения. Порт закрыт", true);
+                        Console.WriteLine("Нажмите любую клавишу для продолжения...");
+                        Console.ReadKey();
+                        Environment.Exit(-1);
                     }
                     else
                     {
-                        int ReadBuf = COM.ReadCOMport();
-                        if (ReadBuf >= 0)
+                        if (!ReadType)
                         {
-                            TextColor.GreenColor(ReadBuf + "", true);
+                            if (ReadBuf >= 0)
+                            {
+                                TextColor.GreenColor(Convert.ToChar(ReadBuf), false);
+                            }
+                        }
+                        else
+                        {
+                            if (ReadBuf >= 0)
+                            {
+                                TextColor.GreenColor(ReadBuf + "", true);
+                            }
                         }
                     }
                     
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("\n" + e);
+                    TextColor.ErrorColor("\n" + e, true);
+                    Console.ReadKey();
+                    Environment.Exit(-1);
                 }
             }
         }
@@ -116,14 +128,14 @@ namespace TerminalCOMCs
             Console.Clear();
             if (Stage == 0)
             {
-                while (!COM.InitCOMport())
+                while (!COMport.InitCOMport())
                 {
                     TextColor.ErrorColor("Ошибка инициализации, повторная попытка", true);
                     Thread.Sleep(1000);
                 }
                 TextColor.GreenColor("Порт инициализирован", true);
             }
-            if (!COM.SetConfCOMport())
+            if (!COMport.SetConfCOMport())
             {
                 TextColor.ErrorColor("Ошибка установки настроек", true);
                 Console.ReadKey();
@@ -139,38 +151,38 @@ namespace TerminalCOMCs
                     case 0:
                         {
                             TextColor.DarkCyanColor("Выбран порт ", false);
-                            TextColor.WhiteColor(COM.GetCOMportName(), true);
+                            TextColor.WhiteColor(COMport.GetCOMportName(), true);
                             break;
                         }
                     case 1:
                         {
                             TextColor.DarkCyanColor("Выбрана скорость ", false);
-                            TextColor.WhiteColor("" + COM.GetCOMportBaud(), false);
+                            TextColor.WhiteColor("" + COMport.GetCOMportBaud(), false);
                             TextColor.DarkCyanColor(" Бод", true);
                             break;
                         }
                     case 2:
                         {
                             TextColor.DarkCyanColor("Выбран контроль четности битов ", false);
-                            TextColor.WhiteColor(COM.GetParityName(COM.GetCOMportParity()), true);
+                            TextColor.WhiteColor(COMport.GetParityName(COMport.GetCOMportParity()), true);
                             break;
                         }
                     case 3:
                         {
                             TextColor.DarkCyanColor("Кол-во битов данных в байте ", false);
-                            TextColor.WhiteColor("" + COM.GetCOMportDataBits(), true);
+                            TextColor.WhiteColor("" + COMport.GetCOMportDataBits(), true);
                             break;
                         }
                     case 4:
                         {
                             TextColor.DarkCyanColor("Кол-во стопБитов ", false);
-                            TextColor.WhiteColor(COM.GetStopBitsName(COM.GetCOMportStopBits()), true);
+                            TextColor.WhiteColor(COMport.GetStopBitsName(COMport.GetCOMportStopBits()), true);
                             break;
                         }
                     case 5:
                         {
                             TextColor.DarkCyanColor("Выбран протокол управления ", false);
-                            TextColor.WhiteColor(COM.GetHandshakeName(COM.GetCOMportHandshake()), true);
+                            TextColor.WhiteColor(COMport.GetHandshakeName(COMport.GetCOMportHandshake()), true);
                             break;
                         }
                     case 6:
@@ -200,7 +212,7 @@ namespace TerminalCOMCs
                         
                 }
             }
-            if (COM.IsOpenCOMport())
+            if (COMport.IsOpenCOMport())
             {
                 TextColor.GreenColor("Соединение открыто", true);
                 return true;
@@ -214,18 +226,19 @@ namespace TerminalCOMCs
 
         static void Main(string[] args)
         {
+            COMport = new COM();
             {
                 //1(0) GetNames
                 do
                 {
                     TextColor.GreenColor("Получение информации об активных COM портах...", true);
-                    if (!COM.PortsNamesUpdate())
+                    if (!COMport.PortsNamesUpdate())
                     {
                         TextColor.ErrorColor("Ошибка получения имен портов.", true);
                         Console.WriteLine("Нажмите любую клавишу для повторной попытки...\n");
                         Console.ReadKey();
                     }
-                    if ((PortCount = COM.GetPortsCount()) == 0)
+                    if ((PortCount = COMport.GetPortsCount()) == 0)
                     {
                         TextColor.ErrorColor("Активные порты не найдены. Проверьте наличие активных портов в диспетчере устройств.", true);
                         Console.WriteLine("Нажмите любую клавишу для повторной проверки...\n");
@@ -234,7 +247,7 @@ namespace TerminalCOMCs
                 } while (PortCount == 0);
                 for (int i = 0; i < PortCount; i++)
                 {
-                    Console.WriteLine(i + ".  =>  " + COM.GetPortsName(i));
+                    Console.WriteLine(i + ".  =>  " + COMport.GetPortsName(i));
                 }
                 TextColor.GrayColor("Введите номер нужного вам порта (от 0 до " + (PortCount - 1) + "): ", false);
                 do
@@ -257,7 +270,7 @@ namespace TerminalCOMCs
                         TextColor.ErrorColor("Неверный формат, введите число (от 0 до " + (PortCount - 1) + "): ", false);
                     }
                 } while (PortNum < 0 || PortNum > PortCount - 1);
-                COM.SetPortName(PortNum);
+                COMport.SetPortName(PortNum);
                 GetStateConfigurate(0);
 
 
@@ -265,7 +278,7 @@ namespace TerminalCOMCs
                 TextColor.GreenColor("\nУстановите скорость приема/передачи COM порта в Бодах.", true);
                 for (int i = 1; i <= 9; i++)
                 {
-                    Console.WriteLine(i + ".  =>  " + COM.GetBaud(i));
+                    Console.WriteLine(i + ".  =>  " + COMport.GetBaud(i));
                 }
                 TextColor.GrayColor("Введите номер нужной вам скорости или введите вручную (10 и больше): ", false);
                 do
@@ -289,11 +302,11 @@ namespace TerminalCOMCs
                 } while (PortBaudRate < 1);
                 if (PortBaudRate < 10)
                 {
-                    COM.SetPortBaud(COM.GetBaud(PortBaudRate));
+                    COMport.SetPortBaud(COMport.GetBaud(PortBaudRate));
                 }
                 else
                 {
-                    COM.SetPortBaud(PortBaudRate);
+                    COMport.SetPortBaud(PortBaudRate);
                 }
                 GetStateConfigurate(1);
 
@@ -308,7 +321,7 @@ namespace TerminalCOMCs
                     TextColor.GreenColor("\nВыберите контроль четности битов (если не знаете что это, выберите 1).", true);
                     for (int i = 1; i <= 5; i++)
                     {
-                        Console.WriteLine(i + ".  =>  " + COM.GetParityName(i));
+                        Console.WriteLine(i + ".  =>  " + COMport.GetParityName(i));
                     }
                     TextColor.GrayColor("Введите номер нужного вам контроля четности битов (от 1 до 5): ", false);
                     do
@@ -330,7 +343,7 @@ namespace TerminalCOMCs
                             TextColor.ErrorColor("Неверный формат, введите число (от 1 до 5): ", false);
                         }
                     } while (PortParity < 1 || PortParity > 5);
-                    COM.SetPortParity(PortParity);
+                    COMport.SetPortParity(PortParity);
                     GetStateConfigurate(2);
 
                     //3.2(3) SetDataBits
@@ -355,14 +368,14 @@ namespace TerminalCOMCs
                             TextColor.ErrorColor("Неверный формат, введите число (от 5 до 8): ", false);
                         }
                     } while (PortDataBits < 5 || PortDataBits > 8);
-                    COM.SetPortDataBits(PortDataBits);
+                    COMport.SetPortDataBits(PortDataBits);
                     GetStateConfigurate(3);
 
                     //3.3(4) SetStopBits
                     TextColor.GreenColor("\nУстановите число стопБитов (если не знаете что это, выберите 1).", true);
                     for (int i = 1; i <= 4; i++)
                     {
-                        Console.WriteLine((i - 1) + ".  =>  " + COM.GetStopBitsName(i));
+                        Console.WriteLine((i - 1) + ".  =>  " + COMport.GetStopBitsName(i));
                     }
                     TextColor.GrayColor("Введите номер нужного вам кол-ва стопБитов (от 1 до 3): ", false);
                     do
@@ -384,14 +397,14 @@ namespace TerminalCOMCs
                             TextColor.ErrorColor("Неверный формат, введите число (от 1 до 3): ", false);
                         }
                     } while (PortStopBits < 2 || PortStopBits > 4);
-                    COM.SetPortStopBits(PortStopBits);
+                    COMport.SetPortStopBits(PortStopBits);
                     GetStateConfigurate(4);
 
                     //3.4(5) SetHandshake
                     TextColor.GreenColor("\nУстановите протокол управления (если не знаете что это, выберите 1).", true);
                     for (int i = 1; i <= 4; i++)
                     {
-                        Console.WriteLine((i) + ".  =>  " + COM.GetHandshakeName(i));
+                        Console.WriteLine((i) + ".  =>  " + COMport.GetHandshakeName(i));
                     }
                     TextColor.GrayColor("Введите номер нужного вам протокола (от 1 до 4): ", false);
                     do
@@ -413,7 +426,7 @@ namespace TerminalCOMCs
                             TextColor.ErrorColor("Неверный формат, введите число (от 1 до 4): ", false);
                         }
                     } while (PortHandshake < 1 || PortHandshake > 4);
-                    COM.SetPortHandshake(PortHandshake);
+                    COMport.SetPortHandshake(PortHandshake);
                     GetStateConfigurate(5);
                 }
 
@@ -451,7 +464,7 @@ namespace TerminalCOMCs
 
                 //5 Connect
                 Console.WriteLine("Открытие соединения...");
-                while (!COM.OpenCOMport())
+                while (!COMport.OpenCOMport())
                 {
                     TextColor.ErrorColor("Ошибка соединения, повторная попытка", true);
                     Thread.Sleep(1000);
@@ -464,13 +477,13 @@ namespace TerminalCOMCs
             {
                 if (!WriteType)
                 {
-                    COM.WriteCOMport(Console.ReadLine(), true);
+                    COMport.WriteCOMport(Console.ReadLine(), true);
                 }
                 else
                 {
                     try
                     {
-                        COM.WriteCOMport(Convert.ToInt32(Console.ReadLine()), false);
+                        COMport.WriteCOMport(Convert.ToInt32(Console.ReadLine()), false);
                     }
                     catch (FormatException)
                     {
